@@ -13,11 +13,11 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
-    username: root
+    datebase: 0
     password:
-
-
-
+  cache:
+    redis:
+      time-to-live: 1800000
 
 
 mybatis-plus:

@@ -33,7 +33,7 @@ public class UserController {
     @Autowired
     private UserService userService;
      @Resource
-     private StringRedisTemplate redisTemplate;
+     private RedisTemplate redisTemplate;
 
     //获取验证码
     @PostMapping("/sendMsg")
@@ -68,16 +68,14 @@ public class UserController {
         //获取验证码
         String code = map.get("code").toString();
         //从Session中获取保存的验证码
-        Object codeInSession = session.getAttribute(phone);
-
+      //  Object codeInSession = session.getAttribute(phone);
         //从redis中获取保存的雁阵吗，如果登陆成功则删除redis中的验证码
-     //   String code1=redisTemplate.opsForValue().get(phone);
-
+       Object code1=redisTemplate.opsForValue().get(phone);
+        System.out.println(code1);
 
         //进行验证码比对（页面提交的验证码和Session中保存的验证码比对）
-        if (codeInSession!= null && codeInSession.equals(code)) {
+        if (code1!= null && code1.equals(code)) {
             //如果能够比对成功，说明登录成功
-
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(User::getPhone, phone);
             User user = userService.getOne(queryWrapper);
@@ -88,7 +86,7 @@ public class UserController {
                 user.setStatus(1);
                 userService.save(user);
             }
-            redisTemplate.delete(phone);
+           redisTemplate.delete(phone);
             session.setAttribute("user", user.getId());
             return R.success(user);
         }
